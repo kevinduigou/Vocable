@@ -259,7 +259,7 @@ class dictionary ():
     def please_translate(self,french_word,mode=""):
 
         translation_in=easygui.enterbox(msg=french_word,title="Flash Card Recto")
-        if translation_in==None:
+        if translation_in==None or translation_in=="-q":
             return None
         substitution_list=[",","(",")"," ",";","¨"]
         correct_pattern_str=copy.copy(self.__content[french_word]["Definition/Translation/Association"])
@@ -283,7 +283,7 @@ class dictionary ():
             value=copy.copy(self.__content[french_word])
             self.__content[french_word]["Number of Days before the next interogation"]=fibonacci.fib(int(value["Group"])-int(value["Number of Days since the last interogation"]))
             
-
+            self.save(self.__uploaded_dictionary_file_path)
             return 1
         else:
             last_group=self.__content[french_word]["Group"]
@@ -295,27 +295,31 @@ class dictionary ():
                 self.__content[french_word]["Group"]-=2
 
             self.__content[french_word]["Last Interogation Date"]=datetime.datetime.now()
-            
+            self.save(self.__uploaded_dictionary_file_path)
 
+            request_index=0
             while correct_pattern.search(translation_in) is None:
                 translation_in=easygui.enterbox(
                     msg="Correct Anwswer for\n-->"
                     +french_word+"\n           is\n-->"
                     +self.__content[french_word]["Definition/Translation/Association"]+
-                    "\n------------------------------\nYour Anwswer was\n"+translation_in+
+                    "\n------------------------------\nYour Anwswer was\n-->"+translation_in+
                     "\n------------------------------\nWrite the GOOD Answer or 'iwr' (I was right) or 'c' (continue)",
                     title="Wrong Answer")
-                if translation_in==None:
+                request_index+=1
+                if translation_in==None or translation_in=="-q":
                     return None
-                if translation_in=="I was right" or translation_in=="iwr":
+                if (translation_in=="I was right" or translation_in=="iwr") and request_index==1:
                     self.__content[french_word]["Group"]==last_group+1
                     self.__content[french_word]["Last Interogation Date"]=datetime.datetime.now()
                     self.__content[french_word]["Number of Days since the last interogation"]=0
                     value=copy.copy(self.__content[french_word])
                     self.__content[french_word]["Number of Days before the next interogation"]=fibonacci.fib(int(value["Group"])-int(value["Number of Days since the last interogation"]))
+                    self.save(self.__uploaded_dictionary_file_path)
                     return 1 
                 if translation_in=="c":
                     translation_in=self.__content[french_word]["Definition/Translation/Association"]
+                    return 0
             
             choices = ["Continue","Modify the word"]
             reply=easygui.buttonbox(msg="Good Answer",title="Flash Card Recto",choices=choices)

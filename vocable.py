@@ -18,10 +18,11 @@ if __name__=="__main__":
     language=None
     dictionary_file_path=""
     for arg in sys.argv:
-        if re.search("--user=(.*)",arg) is not None:
-            user=re.search("--user=(.*)",arg).group(1)
-        elif re.search("--language",arg) is not None:
-            language=re.search("--language=(.*)",arg).group(1)
+        print (arg)
+        if re.search("-u=(.*)",arg) is not None:
+            user=re.search("-u=(.*)",arg).group(1)
+        elif re.search("-l=(.*)",arg) is not None:
+            language=re.search("-l=(.*)",arg).group(1)
     if not  user==None and not language==None:
         if os.path.isdir(os.getcwd()+"/dictionary/"+user+"/"+language):
             for file_name in os.listdir(os.getcwd()+"/dictionary/"+user+"/"+language):
@@ -40,7 +41,6 @@ if __name__=="__main__":
         "03-           Help",
         "04-           Quit"]
         __mode__   = easygui.choicebox(msg, title, choices)
-        
         if __mode__==None:
             pass
         elif re.search("Create a Dictionary",__mode__) is not None:
