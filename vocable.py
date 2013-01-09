@@ -35,7 +35,10 @@ if __name__=="__main__":
     
         msg     = "Welcome in Vocable.\nWhat do you want to do?"
         title   = "VocablePython"
-        choices = ["01-Create a Dictionary","02-Load a Dictionary","03-Help","04-Quit"]
+        choices = ["01-           Create a Dictionary",
+        "02-           Load a Dictionary",
+        "03-           Help",
+        "04-           Quit"]
         __mode__   = easygui.choicebox(msg, title, choices)
         
         if __mode__==None:
@@ -65,38 +68,39 @@ if __name__=="__main__":
     while not __mode__==None:
         
         #dictionary_of_work.upload_dictionary(dictionary_file_path)
-        msg     = "What do you want to do?\nCurrent Dictionary Use is: "+dictionary_file_path
-        title   = "VocablePython"
-        choices = ["0101-New Interogation Sprint","0102-New Interogation Marathon","0201-Add Word in this Dictionary",
-        "0202-Delete Word in this Dictionary",
-        "0203-Modify a Word","0301-Interogation Configuration","0302-Statistic on this Dictionary","0401-Create a Dictionary",
-        "0402-Load an other Dictionary","0403-ReLoad this Dictionary","0501-Edit a file to Load in Quizlet","0501-Help","0502-Quit"]
+        msg     = "What do you want to do?\nWith the Current Dictionary: "+dictionary_file_path
+        title   = "Vocable"
+        choices = [
+        "00-           Learn",
+        "11-           Add Words",
+        "12-           Delete Words",
+        "13-           Modify Words",
+        "21-           Modify Configuration",
+        "22-           Get Statistic",
+        "31-           Create a Dictionary",
+        "32-           Load an other Dictionary",
+        "33-           ReLoad this Dictionary",
+        "40-           Help",
+        "50-           Quit"]
         __mode__   = easygui.choicebox(msg, title, choices)
 
         
         
         if __mode__==None:
             pass
-        elif re.search("New Interogation Sprint",__mode__) is not None:
-            dictionary_of_work.create_new_interogation(
-                list=[],
-                number_of_word_to_learn=__number_of_word_to_learn_by_serie__,
-                day_in_advance=__day_in_advance__,
-                mode="sprint")
-
-        elif re.search("New Interogation Marathon",__mode__) is not None:
+        elif re.search("Learn",__mode__) is not None:
             dictionary_of_work.create_new_interogation(
                 list=[],
                 number_of_word_to_learn=__number_of_word_to_learn_by_serie__,
                 day_in_advance=__day_in_advance__,
                 mode="marathon")
-        elif re.search("Add Word in this Dictionary",__mode__) is not None:
+        elif re.search("Add Words",__mode__) is not None:
             dictionary_of_work.add_word()
-        elif re.search("Delete Word in this Dictionary",__mode__) is not None:
+        elif re.search("Delete Words",__mode__) is not None:
             dictionary_of_work.del_word()
-        elif re.search("Modify a Word",__mode__) is not None:
+        elif re.search("Modify Words",__mode__) is not None:
             dictionary_of_work.modify_word()
-        elif re.search("Interogation Configuration",__mode__) is not None:
+        elif re.search("Modify Configuration",__mode__) is not None:
             config_dict=easygui.multenterbox(msg='Configuation', title='Configuration Box', 
             fields=('Number of word by interogation',"Number of day in advance"), values=(str(__number_of_word_to_learn_by_serie__),str(__day_in_advance__)))
             if not config_dict==None:
@@ -104,7 +108,7 @@ if __name__=="__main__":
 
                 __day_in_advance__=int(config_dict[1])
                 
-        elif re.search("Statistic on this Dictionary",__mode__) is not None:
+        elif re.search("Get Statistic",__mode__) is not None:
             dictionary_of_work.stat_display()
         elif re.search("Create a Dictionary",__mode__) is not None:
             old_dictionary_file_path=copy.copy(dictionary_file_path)
@@ -124,9 +128,6 @@ if __name__=="__main__":
                 dictionary_of_work.upload_dictionary(dictionary_file_path)
             else:
                 dictionary_file_path=old_dictionary_file_path
-        elif re.search("Quizlet",__mode__) is not None:
-            quizlet_dictionary_file_path=easygui.filesavebox(default="quizlet.csv")
-            dictionary_of_work.save(quizlet_dictionary_file_path,option="Quizlet")
         elif re.search("Help",__mode__) is not None:
             dictionary_of_work.help()
         elif re.search("Quit",__mode__) is not None:
