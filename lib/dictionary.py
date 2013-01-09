@@ -228,6 +228,7 @@ class dictionary ():
         if option=="Quizlet":
             pass
         else :
+
             file.write(";".join(column))
             file.write("\n")
         
@@ -257,10 +258,10 @@ class dictionary ():
         
     def please_translate(self,french_word,mode=""):
 
-        translation_in=easygui.enterbox(msg='Please Translate: '+french_word,title="Flash Card-Recto. Mode: "+mode)
+        translation_in=easygui.enterbox(msg=french_word,title="Flash Card Recto")
         if translation_in==None:
             return None
-        substitution_list=[",","(",")"," ",";","¨"]
+        substitution_list=[",","(",")"," ",";","Â¨"]
         correct_pattern_str=copy.copy(self.__content[french_word]["Definition/Translation/Association"])
         
         for substitution in substitution_list:
@@ -270,7 +271,7 @@ class dictionary ():
 
         if correct_pattern.search(translation_in) is not None:
             choices = ["Continue","Modify the word"]
-            reply=easygui.buttonbox(msg="Good Answer",title="Flash Card-Recto. Mode: "+mode,choices=choices)
+            reply=easygui.buttonbox(msg="Good Answer",title="Good Answer",choices=choices)
             
             if reply=="Modify the word":
                 self.modify_word(french_word)
@@ -285,21 +286,39 @@ class dictionary ():
 
             return 1
         else:
-            self.__content[french_word]["Group"]=0
+            last_group=self.__content[french_word]["Group"]
+            if self.__content[french_word]["Group"]==0:
+                pass
+            elif self.__content[french_word]["Group"]==1:
+                self.__content[french_word]["Group"]=0
+            else:
+                self.__content[french_word]["Group"]-=2
+
             self.__content[french_word]["Last Interogation Date"]=datetime.datetime.now()
             
 
             while correct_pattern.search(translation_in) is None:
                 translation_in=easygui.enterbox(
-                    msg="Wrong the correct Translation of "
-                    +french_word+" is:\n"
+                    msg="Correct Anwswer for\n-->"
+                    +french_word+"\n           is\n-->"
                     +self.__content[french_word]["Definition/Translation/Association"]+
-                    "\nYou have written:\n"+translation_in,
-                    title="Flash Card-Recto. Mode: "+mode)
+                    "\n------------------------------\nYour Anwswer was\n"+translation_in+
+                    "\n------------------------------\nWrite the GOOD Answer or 'iwr' (I was right) or 'c' (continue)",
+                    title="Wrong Answer")
                 if translation_in==None:
                     return None
+                if translation_in=="I was right" or translation_in=="iwr":
+                    self.__content[french_word]["Group"]==last_group+1
+                    self.__content[french_word]["Last Interogation Date"]=datetime.datetime.now()
+                    self.__content[french_word]["Number of Days since the last interogation"]=0
+                    value=copy.copy(self.__content[french_word])
+                    self.__content[french_word]["Number of Days before the next interogation"]=fibonacci.fib(int(value["Group"])-int(value["Number of Days since the last interogation"]))
+                    return 1 
+                if translation_in=="c":
+                    translation_in=self.__content[french_word]["Definition/Translation/Association"]
+            
             choices = ["Continue","Modify the word"]
-            reply=easygui.buttonbox(msg="Good Answer",title="Flash Card-Recto. Mode: "+mode,choices=choices)
+            reply=easygui.buttonbox(msg="Good Answer",title="Flash Card Recto",choices=choices)
             
             if reply=="Modify the word":
                 self.modify_word(french_word)
@@ -350,7 +369,7 @@ class dictionary ():
       
         self.save(self.__uploaded_dictionary_file_path)
         if len(unknown_vocabulary)==0 and len(known_vocabulary)==0:
-            easygui.msgbox(msg="No new Vocabulary for today",title=mode)
+            easygui.msgbox(msg="No new Vocabulary for today",title="Learn")
             return ;
         
         if not total_point==number_of_word:
